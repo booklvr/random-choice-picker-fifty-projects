@@ -1,7 +1,8 @@
 import React from 'react'
+import RandomChoicePicker from './components/RandomChoicePicker'
 
 const App = () => {
-  return <h1>BoilerPlate</h1>
+  return <RandomChoicePicker />
 }
 
 export default App
