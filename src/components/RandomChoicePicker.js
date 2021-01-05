@@ -3,37 +3,66 @@ import React, { useState, useEffect, useRef } from 'react'
 const RandomChoicePicker = () => {
   const textInput = useRef(null)
 
-  const [choices, setChoices] = useState([])
+  const [choices, setChoices] = useState('')
+  const [isFinished, setIsFinished] = useState(false)
+  const [randomIndex, setRandomIndex] = useState('')
+  // const [randomIndex, setRandomIndex] = useState('')
 
   const keyUpHandler = (e) => {
+    if (isFinished) {
+      setIsFinished(false)
+      setChoices('')
+    }
     if (e.key === ',') {
       createTags(e.target.value)
     } else if (e.key === 'Enter') {
       createTags(e.target.value)
 
+      setIsFinished(true)
+
       setTimeout(() => {
         e.target.value = ''
       }, 10)
-
-      randomSelect()
     }
   }
 
   const createTags = (input) => {
-    console.log('create tags')
-    // const tags = input
-    //   .split(',')
-    //   .filter((tag) => tag.trim() !== '')
-    //   .map((tag) => tag.trim())
+    const tags = input
+      .split(',')
+      .filter((tag) => tag.trim() !== '')
+      .map((tag) => tag.trim())
+
+    setChoices(tags)
   }
 
   const randomSelect = () => {
-    console.log('hello')
+    const randomIndex = Math.floor(Math.random() * choices.length)
+    setRandomIndex(randomIndex)
+    console.log(randomIndex)
   }
 
   useEffect(() => {
-    textInput.current.focus()
-  }, [])
+    if (isFinished) {
+      const times = 30
+      const interval = setInterval(() => {
+        //highlight
+
+        setTimeout(() => {
+          randomSelect()
+        }, 100)
+      }, 100)
+
+      setTimeout(() => {
+        clearInterval(interval)
+
+        setTimeout(() => {
+          randomSelect()
+        }, 100)
+      }, times * 100)
+    }
+  }, [isFinished])
+
+  useEffect(() => {}, [choices])
 
   return (
     <div className='container'>
@@ -47,11 +76,19 @@ const RandomChoicePicker = () => {
         id='textarea'
         onKeyUp={(e) => keyUpHandler(e)}
       ></textarea>
-      <div id='tags'>
-        <span className='tag'>Choice 1</span>
-        <span className='tag'>Choice 2</span>
-        <span className='tag'>Choice 3</span>
-      </div>
+      {choices && (
+        <div id='tags'>
+          {choices.map((choice, index) => (
+            <span
+              key={index}
+              id='tag'
+              className={`${randomIndex === index ? 'tag highlight' : 'tag'}`}
+            >
+              {choice}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
